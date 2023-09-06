@@ -17,6 +17,7 @@ class MyUI(QtWidgets.QWidget):
 
         self.v_layout = QtWidgets.QVBoxLayout(self)
 
+        # Select Photo Button
         self.h_layout = QtWidgets.QHBoxLayout(self)
         self.btn_to_select_photo = QtWidgets.QPushButton(self)
         self.btn_to_select_photo.setText("Select Photo")
@@ -27,6 +28,7 @@ class MyUI(QtWidgets.QWidget):
         self.v_layout.addItem(self.h_layout)
         self.btn_to_select_photo.clicked.connect(self.show_select_photo)
 
+        # Select Folder Button
         self.h_layout1 = QtWidgets.QHBoxLayout(self)
         self.btn_to_select_folder = QtWidgets.QPushButton(self)
         self.btn_to_select_folder.setText("Select Folder")
@@ -37,20 +39,22 @@ class MyUI(QtWidgets.QWidget):
         self.v_layout.addItem(self.h_layout1)
         self.btn_to_select_folder.clicked.connect(self.show_select_folder)
 
-
+        # Run Button
         self.btn_to_execute = QtWidgets.QPushButton(self)
         self.btn_to_execute.setText("Run")
         self.btn_to_execute.clicked.connect(self.run)
         self.v_layout.addWidget(self.btn_to_execute)
 
-
+        # "Duplicate" Label
         self.label = QtWidgets.QLabel(self)
         self.label.setText('Duplicate Image is at: ')
         self.v_layout.addWidget(self.label)
 
+        # List
         self.listwidget = QtWidgets.QListWidget(self)
         self.v_layout.addWidget(self.listwidget)
 
+        # Progress Bar
         self.bar = QtWidgets.QProgressBar(self)
         self.bar.setRange(0, 100)
         self.v_layout.addWidget(self.bar)
