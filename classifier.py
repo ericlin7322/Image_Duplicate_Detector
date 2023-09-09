@@ -14,7 +14,7 @@ class Classifier:
 
         for root, dirs, files in os.walk(folder, topdown=False):
             for name in files:
-                if name.endswith('.png') or name.endswith('.jpg') or name.endswith('.jpeg'):
+                if name.endswith('.png') or name.endswith('.PNG') or name.endswith('.jpg') or name.endswith('.jpeg') or name.endswith('.JPG'):
                     try:
                         im2 = Image.open(os.path.join(root, name))
                         if im1 == im2:
