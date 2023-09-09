@@ -1,9 +1,11 @@
 from PyQt6 import QtWidgets
-from PyQt6.QtCore import QThread
+from PyQt6.QtCore import QThread, pyqtSignal
 import classifier
 import sys
 
 class MyUI(QtWidgets.QWidget):
+    work_requested = pyqtSignal(str, str) 
+
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Image Duplicate Detector')
@@ -14,7 +16,6 @@ class MyUI(QtWidgets.QWidget):
         self.ui()
 
     def ui(self):
-
         self.v_layout = QtWidgets.QVBoxLayout(self)
 
         # Select Photo Button
@@ -42,7 +43,7 @@ class MyUI(QtWidgets.QWidget):
         # Run Button
         self.btn_to_execute = QtWidgets.QPushButton(self)
         self.btn_to_execute.setText("Run")
-        self.btn_to_execute.clicked.connect(self.run)
+        self.btn_to_execute.clicked.connect(self.start_find_duplicate_image)
         self.v_layout.addWidget(self.btn_to_execute)
 
         # "Duplicate" Label
@@ -59,27 +60,35 @@ class MyUI(QtWidgets.QWidget):
         self.bar.setRange(0, 100)
         self.v_layout.addWidget(self.bar)
 
+        # QThread
+        self.worker = classifier.Classifier()
+        self.worker_thread = QThread()
+        self.worker.process.connect(self.progress_bar_update)
+        self.worker.found.connect(self.image_find)
+        self.work_requested.connect(self.worker.classify)
+        self.worker.moveToThread(self.worker_thread)
+        self.worker_thread.start()
+
     def show_select_photo(self):
-        filePath , filterType = QtWidgets.QFileDialog.getOpenFileNames(self, 'Select Photo')  # 選擇檔案對話視窗
+        filePath , filterType = QtWidgets.QFileDialog.getOpenFileNames(self, 'Select Photo')
         self.select_photo = ' '.join(filePath)
         self.label_of_select_photo_btn.setText(f"{self.select_photo}")
 
     def show_select_folder(self):
-        filePath = str(QtWidgets.QFileDialog.getExistingDirectory(self, 'Select Directory'))  # 選擇檔案對話視窗
+        filePath = str(QtWidgets.QFileDialog.getExistingDirectory(self, 'Select Directory'))
         self.select_folder = filePath
         self.label_of_select_folder_btn.setText(f"{filePath}")
 
-    def run(self):
+    def start_find_duplicate_image(self):
         if self.select_photo != '' and self.select_folder != '':
             self.listwidget.clear()
-            self.thread_a = QThread()
-            self.thread_a.run = self.detect_duplicate
-            self.thread_a.start() 
-            self.bar.setRange(0, 0)
+            self.work_requested.emit(self.select_photo, self.select_folder)
 
-    def detect_duplicate(self):
-        self.listwidget.addItems(classifier.Classifier().classify(self.select_photo, self.select_folder))
-        self.bar.setRange(0, 100)
+    def progress_bar_update(self, value):
+        self.bar.setValue(value)
+
+    def image_find(self, image):
+        self.listwidget.addItem(image)
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
