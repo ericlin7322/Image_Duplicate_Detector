@@ -83,6 +83,7 @@ class MyUI(QtWidgets.QWidget):
         if self.select_photo != '' and self.select_folder != '':
             self.listwidget.clear()
             self.work_requested.emit(self.select_photo, self.select_folder)
+            self.bar.setValue(0)
 
     def progress_bar_update(self, value):
         self.bar.setValue(value)

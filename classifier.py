@@ -21,7 +21,9 @@ class Classifier(QThread):
 
         start_time = time.time()
         file_done = 0
+        print("Start Finding")
         file_count = sum(len(files) for _, _, files in os.walk(folder, topdown=False))
+        print("Start Running")
         with tqdm(total=file_count) as pbar:
             for root, dirs, files in os.walk(folder):
                 for name in files:
@@ -36,7 +38,6 @@ class Classifier(QThread):
                     pbar.update(1)
                     file_done += 1
                     self.process.emit(int(file_done/file_count*100))
-
-        
         print("--- %s seconds ---" % (time.time() - start_time))
-        return str      
+        return str
+
